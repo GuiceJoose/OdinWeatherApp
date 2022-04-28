@@ -1,3 +1,5 @@
+import "./assets/style.css";
+
 const userInput = document.querySelector("input");
 const form = document.querySelector("form");
 
@@ -69,6 +71,15 @@ async function processWeatherData() {
     let currentConditions = newData.current.weather[0].description;
     let windSpeed = Math.round(newData.current.wind_speed);
     let windDirection = newData.current.wind_deg;
+
+    let weeklyForcast = getWeeklyForcast(newData.daily);
+    let processedWeeklyForecast = weeklyForcast.map((x) => {
+      let high = Math.round(convertKtoF(x.high));
+      let low = Math.round(convertKtoF(x.low));
+      let conditions = x.conditions;
+      return { high, low, conditions };
+    });
+
     return {
       currentTemp,
       highTemp,
@@ -78,6 +89,7 @@ async function processWeatherData() {
       currentConditions,
       windSpeed,
       windDirection,
+      processedWeeklyForecast,
     };
   } catch (err) {
     console.log(err);
@@ -113,6 +125,8 @@ async function showWeatherData() {
     const windDirectionDisplay = document.getElementById("wind-direction");
     windDirectionDisplay.style.transform =
       "rotate(" + (180 + dataToShow.windDirection - 90) + "deg)";
+
+    showWeeklyForecast(dataToShow.processedWeeklyForecast);
   } catch (err) {
     console.log(err);
   }
@@ -143,6 +157,43 @@ function initializePage() {
   showWeatherData();
   showLocation();
   userInput.value = "";
+}
+
+function getWeeklyForcast(weeksWeather) {
+  let weeklyForcast = weeksWeather.map((day) => {
+    let high = day.temp.max;
+    let low = day.temp.min;
+    let conditions = day.weather[0].description;
+    return { high, low, conditions };
+  });
+  return weeklyForcast;
+}
+
+function showWeeklyForecast(weeksForecast) {
+  let weeklyForecastDisplay = document.getElementById("weekly-forecast");
+  weeksForecast.forEach((day) => {
+    let dayCard = makeWeekForcastCard(day);
+    weeklyForecastDisplay.appendChild(dayCard);
+  });
+}
+
+function makeWeekForcastCard(daysForecast) {
+  const dayForecastDisplay = document.createElement("div");
+  dayForecastDisplay.classList.add("day-card");
+  const forecastedHighTempDisplay = document.createElement("div");
+  const forecastedLowTempDisplay = document.createElement("div");
+  const forecastedConditionsDisplay = document.createElement("div");
+
+  forecastedHighTempDisplay.textContent = daysForecast.high;
+  forecastedLowTempDisplay.textContent = daysForecast.low;
+  forecastedConditionsDisplay.textContent = daysForecast.conditions;
+
+  dayForecastDisplay.append(
+    forecastedHighTempDisplay,
+    forecastedLowTempDisplay,
+    forecastedConditionsDisplay
+  );
+  return dayForecastDisplay;
 }
 
 function convertKtoC(tempInK) {

@@ -23,6 +23,17 @@ body {
     padding: 1rem;
 }
 
+.weekly-forecast {
+    display: flex;
+    gap: .5rem;
+}
+
+.day-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+}
+
 .arrow-wrapper {
     position: relative;
     width: 80px;
