@@ -1,4 +1,3 @@
-import "./assets/style.css";
 import { format, fromUnixTime } from "date-fns";
 
 const userInput = document.querySelector("input");
