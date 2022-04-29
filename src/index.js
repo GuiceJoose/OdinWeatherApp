@@ -1,12 +1,21 @@
 import "./assets/style.css";
+import { format, fromUnixTime } from "date-fns";
 
 const userInput = document.querySelector("input");
 const form = document.querySelector("form");
+const imperialButton = document.getElementById("imperial");
+const metricButton = document.getElementById("metric");
+let lastSearch = "Chicago";
+let changeUnits = false;
 
+imperialButton.addEventListener("click", switchToImperial);
+metricButton.addEventListener("click", switchToMetric);
 form.addEventListener("submit", handleSubmit);
+
 initializePage();
 
 function handleSubmit(e) {
+  lastSearch = userInput.value;
   e.preventDefault();
   showLocation();
   showWeatherData();
@@ -40,7 +49,7 @@ async function getCoords(location) {
 
 async function getWeather() {
   try {
-    const coords = await getCoords(userInput.value);
+    const coords = await getCoords(lastSearch);
     const lat = coords.lat;
     const lon = coords.lon;
 
@@ -63,34 +72,81 @@ async function getWeather() {
 async function processWeatherData() {
   try {
     let newData = await getWeather();
-    let currentTemp = Math.round(convertKtoF(newData.current.temp));
-    let highTemp = Math.round(convertKtoF(newData.daily[0].temp.max));
-    let lowTemp = Math.round(convertKtoF(newData.daily[0].temp.min));
-    let feelsLikeTemp = Math.round(convertKtoF(newData.current.feels_like));
-    let humidity = Math.round(newData.current.humidity);
-    let currentConditions = newData.current.weather[0].description;
-    let windSpeed = Math.round(newData.current.wind_speed);
-    let windDirection = newData.current.wind_deg;
+    if (imperialButton.classList.contains("active")) {
+      let currentTemp = Math.round(convertKtoF(newData.current.temp)) + "°F";
+      let highTemp = Math.round(convertKtoF(newData.daily[0].temp.max)) + "°F";
+      let lowTemp = Math.round(convertKtoF(newData.daily[0].temp.min)) + "°F";
+      let feelsLikeTemp =
+        Math.round(convertKtoF(newData.current.feels_like)) + "°F";
+      let humidity = Math.round(newData.current.humidity);
+      let currentConditions = newData.current.weather[0].description;
+      let currentConditionsIcon = newData.current.weather[0].icon;
+      let windSpeed =
+        Math.round(
+          convertMetersPerSecondToMilesPerHour(newData.current.wind_speed)
+        ) + "mph";
+      let windDirection = newData.current.wind_deg;
 
-    let weeklyForcast = getWeeklyForcast(newData.daily);
-    let processedWeeklyForecast = weeklyForcast.map((x) => {
-      let high = Math.round(convertKtoF(x.high));
-      let low = Math.round(convertKtoF(x.low));
-      let conditions = x.conditions;
-      return { high, low, conditions };
-    });
+      let weeklyForcast = getWeeklyForcast(newData.daily);
+      let processedWeeklyForecast = weeklyForcast.map((x) => {
+        let time = format(fromUnixTime(x.time), "EEEE");
+        let high = Math.round(convertKtoF(x.high)) + "°F";
+        let low = Math.round(convertKtoF(x.low)) + "°F";
+        let conditionsIcon = x.conditionsIcon;
+        let conditions = x.conditions;
 
-    return {
-      currentTemp,
-      highTemp,
-      lowTemp,
-      feelsLikeTemp,
-      humidity,
-      currentConditions,
-      windSpeed,
-      windDirection,
-      processedWeeklyForecast,
-    };
+        return { time, high, low, conditionsIcon, conditions };
+      });
+      return {
+        currentTemp,
+        highTemp,
+        lowTemp,
+        feelsLikeTemp,
+        humidity,
+        currentConditions,
+        currentConditionsIcon,
+        windSpeed,
+        windDirection,
+        processedWeeklyForecast,
+      };
+    } else if (metricButton.classList.contains("active")) {
+      let currentTemp = Math.round(convertKtoC(newData.current.temp)) + "°C";
+      let highTemp = Math.round(convertKtoC(newData.daily[0].temp.max)) + "°C";
+      let lowTemp = Math.round(convertKtoC(newData.daily[0].temp.min)) + "°C";
+      let feelsLikeTemp =
+        Math.round(convertKtoC(newData.current.feels_like)) + "°C";
+      let humidity = Math.round(newData.current.humidity);
+      let currentConditions = newData.current.weather[0].description;
+      let currentConditionsIcon = newData.current.weather[0].icon;
+      let windSpeed =
+        Math.round(
+          convertMetersPerSecondToKilometersPerHours(newData.current.wind_speed)
+        ) + "kph";
+      let windDirection = newData.current.wind_deg;
+
+      let weeklyForcast = getWeeklyForcast(newData.daily);
+      let processedWeeklyForecast = weeklyForcast.map((x) => {
+        let time = format(fromUnixTime(x.time), "EEEE");
+        let high = Math.round(convertKtoC(x.high)) + "°C";
+        let low = Math.round(convertKtoC(x.low)) + "°C";
+        let conditionsIcon = x.conditionsIcon;
+        let conditions = x.conditions;
+
+        return { time, high, low, conditionsIcon, conditions };
+      });
+      return {
+        currentTemp,
+        highTemp,
+        lowTemp,
+        feelsLikeTemp,
+        humidity,
+        currentConditions,
+        currentConditionsIcon,
+        windSpeed,
+        windDirection,
+        processedWeeklyForecast,
+      };
+    }
   } catch (err) {
     console.log(err);
   }
@@ -101,23 +157,31 @@ async function showWeatherData() {
     let dataToShow = await processWeatherData();
 
     const currentTempDisplay = document.getElementById("current-temp");
-    currentTempDisplay.textContent = ` Current Temperature: ${dataToShow.currentTemp}°F`;
+    currentTempDisplay.textContent = ` Current Temperature: ${dataToShow.currentTemp}`;
 
     const highTempDisplay = document.getElementById("high-temp");
-    highTempDisplay.textContent = `High: ${dataToShow.highTemp}°F`;
+    highTempDisplay.textContent = `High: ${dataToShow.highTemp}`;
 
     const lowTempDisplay = document.getElementById("low-temp");
-    lowTempDisplay.textContent = `Low: ${dataToShow.lowTemp}°F`;
+    lowTempDisplay.textContent = `Low: ${dataToShow.lowTemp}`;
 
     const feelsLikeTempDisplay = document.getElementById("feels-like");
-    feelsLikeTempDisplay.textContent = `Feels Like: ${dataToShow.feelsLikeTemp}°F`;
+    feelsLikeTempDisplay.textContent = `Feels Like: ${dataToShow.feelsLikeTemp}`;
 
     const humidityDisplay = document.getElementById("humidity");
     humidityDisplay.textContent = `Humidity: ${dataToShow.humidity}%`;
 
+    const currentConditionsIconDisplay = document.getElementById(
+      "current-conditions-icon"
+    );
+    currentConditionsIconDisplay.src =
+      "http://openweathermap.org/img/wn/" +
+      dataToShow.currentConditionsIcon +
+      "@4x.png";
+
     const currentConditionsDisplay =
       document.getElementById("current-conditions");
-    currentConditionsDisplay.textContent = `Current Conditions ${dataToShow.currentConditions}`;
+    currentConditionsDisplay.textContent = `Current Conditions: ${dataToShow.currentConditions}`;
 
     const windSpeedDisplay = document.getElementById("wind-speed");
     windSpeedDisplay.textContent = `Wind Speed: ${dataToShow.windSpeed}`;
@@ -134,7 +198,7 @@ async function showWeatherData() {
 
 async function showLocation() {
   try {
-    const locationData = await getCoords(userInput.value);
+    const locationData = await getCoords(lastSearch);
     const country = locationData.country;
     const state = locationData.state;
     const name = locationData.name;
@@ -153,44 +217,57 @@ async function showLocation() {
 }
 
 function initializePage() {
-  userInput.value = "Chicago";
+  lastSearch = "Chicago";
   showWeatherData();
   showLocation();
-  userInput.value = "";
 }
 
 function getWeeklyForcast(weeksWeather) {
   let weeklyForcast = weeksWeather.map((day) => {
+    let time = day.dt;
     let high = day.temp.max;
     let low = day.temp.min;
+    let conditionsIcon = day.weather[0].icon;
     let conditions = day.weather[0].description;
-    return { high, low, conditions };
+    return { time, high, low, conditionsIcon, conditions };
   });
   return weeklyForcast;
 }
 
 function showWeeklyForecast(weeksForecast) {
   let weeklyForecastDisplay = document.getElementById("weekly-forecast");
-  weeksForecast.forEach((day) => {
-    let dayCard = makeWeekForcastCard(day);
-    weeklyForecastDisplay.appendChild(dayCard);
+  weeklyForecastDisplay.innerHTML = "";
+  weeksForecast.forEach((day, index) => {
+    if (index != 0) {
+      let dayCard = makeWeekForcastCard(day);
+      weeklyForecastDisplay.appendChild(dayCard);
+    }
   });
 }
 
 function makeWeekForcastCard(daysForecast) {
   const dayForecastDisplay = document.createElement("div");
   dayForecastDisplay.classList.add("day-card");
+  const forecastDateDisplay = document.createElement("div");
   const forecastedHighTempDisplay = document.createElement("div");
   const forecastedLowTempDisplay = document.createElement("div");
+  const forecastedConditionsIconDisplay = document.createElement("img");
   const forecastedConditionsDisplay = document.createElement("div");
 
+  forecastDateDisplay.textContent = daysForecast.time;
   forecastedHighTempDisplay.textContent = daysForecast.high;
   forecastedLowTempDisplay.textContent = daysForecast.low;
+  forecastedConditionsIconDisplay.src =
+    "http://openweathermap.org/img/wn/" +
+    daysForecast.conditionsIcon +
+    "@2x.png";
   forecastedConditionsDisplay.textContent = daysForecast.conditions;
 
   dayForecastDisplay.append(
+    forecastDateDisplay,
     forecastedHighTempDisplay,
     forecastedLowTempDisplay,
+    forecastedConditionsIconDisplay,
     forecastedConditionsDisplay
   );
   return dayForecastDisplay;
@@ -215,4 +292,32 @@ function convertCtoF(tempInC) {
 function convertFtoC(tempInF) {
   const tempInC = (tempInF - 32) * (5 / 9);
   return tempInC;
+}
+
+function convertMetersPerSecondToMilesPerHour(mps) {
+  const mph = mps * 2.23694;
+  return mph;
+}
+
+function convertMetersPerSecondToKilometersPerHours(mps) {
+  const kmph = mps * 3.6;
+  return kmph;
+}
+
+function switchToImperial() {
+  if (imperialButton.classList.contains("active")) {
+    return;
+  }
+  metricButton.classList.remove("active");
+  imperialButton.classList.add("active");
+  showWeatherData();
+}
+
+function switchToMetric() {
+  if (metricButton.classList.contains("active")) {
+    return;
+  }
+  imperialButton.classList.remove("active");
+  metricButton.classList.add("active");
+  showWeatherData();
 }
