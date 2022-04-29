@@ -11,7 +11,6 @@ module.exports = {
   },
   mode: "production",
   entry: "./src/index.js",
-  devtool: "inline-source-map",
   devServer: {
     static: "./dist",
   },
