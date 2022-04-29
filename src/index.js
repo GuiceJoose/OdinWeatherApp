@@ -40,8 +40,6 @@ async function getCoords(location) {
     const state = coordsData[0].state;
     const name = coordsData[0].name;
 
-    console.log(coordsData);
-
     return { lat, lon, country, state, name };
   } catch (err) {
     console.log(err);
@@ -63,7 +61,6 @@ async function getWeather() {
 
     const response = await fetch(weatherUrl, { mode: "cors" });
     const weatherData = await response.json();
-    console.log(weatherData);
     return weatherData;
   } catch (err) {
     console.log(err);
@@ -176,7 +173,7 @@ async function showWeatherData() {
       "current-conditions-icon"
     );
     currentConditionsIconDisplay.src =
-      "https://openweathermap.org/img/wn/" +
+      "http://openweathermap.org/img/wn/" +
       dataToShow.currentConditionsIcon +
       "@4x.png";
 
@@ -259,7 +256,7 @@ function makeWeekForcastCard(daysForecast) {
   forecastedHighTempDisplay.textContent = daysForecast.high;
   forecastedLowTempDisplay.textContent = daysForecast.low;
   forecastedConditionsIconDisplay.src =
-    "https://openweathermap.org/img/wn/" +
+    "http://openweathermap.org/img/wn/" +
     daysForecast.conditionsIcon +
     "@2x.png";
   forecastedConditionsDisplay.textContent = daysForecast.conditions;
