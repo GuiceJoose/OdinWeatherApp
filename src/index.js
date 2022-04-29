@@ -20,6 +20,8 @@ function handleSubmit(e) {
   showLocation();
   showWeatherData();
   userInput.value = "";
+  animateForecast();
+  animateMainContent();
 }
 
 async function getCoords(location) {
@@ -184,7 +186,7 @@ async function showWeatherData() {
     currentConditionsDisplay.textContent = `Current Conditions: ${dataToShow.currentConditions}`;
 
     const windSpeedDisplay = document.getElementById("wind-speed");
-    windSpeedDisplay.textContent = `Wind Speed: ${dataToShow.windSpeed}`;
+    windSpeedDisplay.textContent = dataToShow.windSpeed;
 
     const windDirectionDisplay = document.getElementById("wind-direction");
     windDirectionDisplay.style.transform =
@@ -248,7 +250,7 @@ function showWeeklyForecast(weeksForecast) {
 function makeWeekForcastCard(daysForecast) {
   const dayForecastDisplay = document.createElement("div");
   dayForecastDisplay.classList.add("day-card");
-  const forecastDateDisplay = document.createElement("div");
+  const forecastDateDisplay = document.createElement("h4");
   const forecastedHighTempDisplay = document.createElement("div");
   const forecastedLowTempDisplay = document.createElement("div");
   const forecastedConditionsIconDisplay = document.createElement("img");
@@ -320,4 +322,20 @@ function switchToMetric() {
   imperialButton.classList.remove("active");
   metricButton.classList.add("active");
   showWeatherData();
+}
+
+function animateForecast() {
+  let forecastDisplay = document.getElementById("weekly-forecast");
+  forecastDisplay.classList.add("slide");
+  setTimeout(() => {
+    forecastDisplay.classList.remove("slide");
+  }, 2500);
+}
+
+function animateMainContent() {
+  let mainContentDisplay = document.getElementById("main-content");
+  mainContentDisplay.classList.add("slide");
+  setTimeout(() => {
+    mainContentDisplay.classList.remove("slide");
+  }, 2500);
 }

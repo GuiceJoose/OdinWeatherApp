@@ -14,29 +14,38 @@
     <h1>Da Weather</h1>
     <div class="form-wrapper">
         <form action="">
-            <input type="text" name="" id="">
+            <input type="text" name="" id="" placeholder="City, State, Country">
+            <button type="button" class="active" id="imperial">Freedom Units</button>
+            <button type="button" id="metric">Nerd Units</button>
         </form>
     </div>
-    <button class="active" id="imperial">Freedom Units</button>
-    <button id="metric">Nerd Units</button>
-
-    <div class="location-info">
-        <h3 id="location-name"></h3>
-        <div id="location-state"></div>
-        <div id="location-country"></div>
-    </div>
-    <div class="current-weather">
-        <h3 id="current-temp"></h3>
-        <div id="high-temp"></div>
-        <div id="low-temp"></div>
-        <div id="feels-like"></div>
-        <div id="humidity"></div>
-        <img src="" alt="" id="current-conditions-icon">
-        <div id="current-conditions"></div>
-        <div id="wind-direction" class="arrow-wrapper">
-            <div class="wind-arrow" id="wind-direction"></div>
+    <div id="main-content" class="main-content">
+        <div class="left-side-content">
+            <div class="location-info">
+                <h2 id="location-name"></h2>
+                <div id="location-state"></div>
+                <div id="location-country"></div>
+            </div>
+            <div class="current-weather">
+                <h2 id="current-temp"></h2>
+                <div id="high-temp"></div>
+                <div id="low-temp"></div>
+                <div id="feels-like"></div>
+                <div id="humidity"></div>
+            </div>
         </div>
-        <div  id="wind-speed"></div>
+        <div class="wind">
+            <h2>Wind</h2>
+            <div id="wind-direction" class="arrow-wrapper">
+                <div class="wind-arrow" id="wind-direction"></div>
+            </div>
+            <div  id="wind-speed"></div>
+        </div>
+            <div class="current-coniditons-and-wind">
+                <h2 id="current-conditions"></h2>
+                <img src="" alt="" id="current-conditions-icon">
+            </div>
+        
     </div>
     <div class="weekly-forecast" id="weekly-forecast">
         
