@@ -28,7 +28,7 @@ async function getCoords(location) {
   try {
     let locationName = location.replaceAll(" ", "%20");
     let coordsUrl =
-      "http://api.openweathermap.org/geo/1.0/direct?q=" +
+      "https://api.openweathermap.org/geo/1.0/direct?q=" +
       locationName +
       "&limit=1&appid=151004f44b0dc03bef1221eb4dff0ac0";
 
@@ -177,7 +177,7 @@ async function showWeatherData() {
       "current-conditions-icon"
     );
     currentConditionsIconDisplay.src =
-      "http://openweathermap.org/img/wn/" +
+      "https://openweathermap.org/img/wn/" +
       dataToShow.currentConditionsIcon +
       "@4x.png";
 
@@ -260,7 +260,7 @@ function makeWeekForcastCard(daysForecast) {
   forecastedHighTempDisplay.textContent = daysForecast.high;
   forecastedLowTempDisplay.textContent = daysForecast.low;
   forecastedConditionsIconDisplay.src =
-    "http://openweathermap.org/img/wn/" +
+    "https://openweathermap.org/img/wn/" +
     daysForecast.conditionsIcon +
     "@2x.png";
   forecastedConditionsDisplay.textContent = daysForecast.conditions;
